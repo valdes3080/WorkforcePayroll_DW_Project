@@ -1,5 +1,5 @@
 ## Business Questions:
-Business Questions:
+#
 •	Where are payroll costs highest, and why?
 •	Which departments are relying too heavily on overtime?
 •	How is workforce composition changing over time?
