@@ -1,0 +1,482 @@
+<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="4/29/2026 10:08:54 AM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="TATIANA"
+  DTS:CreatorName="Tatiana\Tatiana Valdes"
+  DTS:DTSID="{5A6FCEA8-34C1-495C-A745-8CAA358ADEB3}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="17.0.1010.2"
+  DTS:LocaleID="1033"
+  DTS:ObjectName="LoadFactPayroll"
+  DTS:PackageType="5"
+  DTS:VersionBuild="11"
+  DTS:VersionGUID="{FE99608F-38C5-45F5-8BCD-D5F30BC926D5}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Tatiana\SQLEXPRESS.WorkforcePayroll_OLTP]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{52D85554-B055-408E-AD81-6D1E57E2547B}"
+      DTS:ObjectName="Tatiana\SQLEXPRESS.WorkforcePayroll_OLTP">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectRetryCount="1"
+          DTS:ConnectRetryInterval="5"
+          DTS:ConnectionString="Data Source=Tatiana\SQLEXPRESS;Initial Catalog=WorkforcePayroll_OLTP;Provider=SQLOLEDB.1;Integrated Security=SSPI;Application Name=SSIS-LoadFactPayroll-{52D85554-B055-408E-AD81-6D1E57E2547B}Tatiana\SQLEXPRESS.WorkforcePayroll_OLTP;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Load FactPayroll"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{282A69CE-0592-4649-9C63-43C4C5E453A9}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Load FactPayroll"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{52D85554-B055-408E-AD81-6D1E57E2547B}"
+          SQLTask:SqlStatementSource="&#xA;INSERT INTO dw.FactPayroll&#xA;(&#xA;    EmployeeKey,&#xA;    DepartmentKey,&#xA;    JobTitleKey,&#xA;    PayTypeKey,&#xA;    PayDateKey,&#xA;    RegularHours,&#xA;    OvertimeHours,&#xA;    GrossPay,&#xA;    BonusPay,&#xA;    DeductionAmount,&#xA;    NetPay&#xA;)&#xA;SELECT&#xA;    de.EmployeeKey,&#xA;    dd.DepartmentKey,&#xA;    djt.JobTitleKey,&#xA;    dpt.PayTypeKey,&#xA;    ddte.DateKey,&#xA;    p.RegularHours,&#xA;    p.OvertimeHours,&#xA;    p.GrossPay,&#xA;    p.BonusPay,&#xA;    p.DeductionAmount,&#xA;    p.NetPay&#xA;FROM stg.vPayrollTransaction_Clean p&#xA;JOIN dw.DimEmployee de&#xA;    ON p.EmployeeId = de.EmployeeId&#xA;JOIN dw.DimDepartment dd&#xA;    ON de.DepartmentName = dd.DepartmentName&#xA;JOIN dw.DimJobTitle djt&#xA;    ON de.JobTitleName = djt.JobTitleName&#xA;JOIN dw.DimPayType dpt&#xA;    ON de.PayTypeName = dpt.PayTypeName&#xA;JOIN dw.DimDate ddte&#xA;    ON p.PaymentDate = ddte.[Date];&#xA;GO&#xA;&#xA;&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Log FactPayroll Success"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{BA9A5E99-7386-4046-A7E3-9A55F26933FE}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Log FactPayroll Success"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{52D85554-B055-408E-AD81-6D1E57E2547B}"
+          SQLTask:SqlStatementSource="&#xA;UPDATE etl.ETL_RunLog&#xA;SET EndTime = GETDATE(),&#xA;    Status = 'SUCCESS',&#xA;    RowsLoaded = (SELECT COUNT(*) FROM dw.FactPayroll),&#xA;    ErrorMessage = NULL&#xA;WHERE RunId = (&#xA;    SELECT MAX(RunId)&#xA;    FROM etl.ETL_RunLog&#xA;    WHERE PackageName = 'Load_FactPayroll'&#xA;      AND Status = 'STARTED'&#xA;);" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Log Package Failure"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{953A7879-E418-49EB-BA66-9DD3FD4AB9AC}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Log Package Failure"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{52D85554-B055-408E-AD81-6D1E57E2547B}"
+          SQLTask:SqlStatementSource="UPDATE etl.ETL_RunLog&#xA;SET&#xA;    EndTime = GETDATE(),&#xA;    Status = 'FAILED',&#xA;    ErrorMessage = 'Load_FactPayroll package failed.'&#xA;WHERE RunId = (&#xA;    SELECT MAX(RunId)&#xA;    FROM etl.ETL_RunLog&#xA;    WHERE PackageName = 'Load_FactPayroll'&#xA;      AND Status = 'STARTED'&#xA;);" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Log Package start"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{F189131C-DB6D-471B-8BC5-D317956333BE}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Log Package start"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{52D85554-B055-408E-AD81-6D1E57E2547B}"
+          SQLTask:SqlStatementSource="INSERT INTO etl.ETL_RunLog&#xA;(&#xA;    PackageName,&#xA;    StartTime,&#xA;    EndTime,&#xA;    Status,&#xA;    RowsLoaded,&#xA;    ErrorMessage&#xA;)&#xA;VALUES&#xA;(&#xA;    'Load_FactPayroll',&#xA;    GETDATE(),&#xA;    GETDATE(),&#xA;    'SUCCESS',&#xA;    (SELECT COUNT(*) FROM dw.FactPayroll),&#xA;    NULL&#xA;);" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Truncate FactPayroll"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{F179E850-ED77-48E5-9B58-EA975BF7758A}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Truncate FactPayroll"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{52D85554-B055-408E-AD81-6D1E57E2547B}"
+          SQLTask:SqlStatementSource="TRUNCATE TABLE dw.FactPayroll;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Validate_FactPayroll"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{FC89625D-E730-4BEA-A88F-6D7D2F34F306}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Validate_FactPayroll"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{52D85554-B055-408E-AD81-6D1E57E2547B}"
+          SQLTask:SqlStatementSource="IF EXISTS (&#xA;    SELECT 1&#xA;    FROM dw.FactPayroll&#xA;    WHERE EmployeeKey IS NULL&#xA;       OR DepartmentKey IS NULL&#xA;       OR JobTitleKey IS NULL&#xA;       OR PayTypeKey IS NULL&#xA;       OR PayDateKey IS NULL&#xA;)&#xA;THROW 50001, 'FactPayroll validation failed: missing dimension key.', 1;&#xA;&#xA;&#xA;&#xA;&#xA;DECLARE @stg INT, @fact INT;&#xA;&#xA;SELECT @stg = COUNT(*) FROM stg.vPayrollTransaction_Clean;&#xA;SELECT @fact = COUNT(*) FROM dw.FactPayroll;&#xA;&#xA;IF @stg &lt;&gt; @fact&#xA;THROW 50002, 'FactPayroll validation failed: row count mismatch.', 1;&#xA;&#xA;&#xA;&#xA;&#xA;&#xA;IF NOT EXISTS (SELECT 1 FROM dw.FactPayroll)&#xA;THROW 50003, 'FactPayroll validation failed: no rows loaded.', 1;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint]"
+      DTS:CreationName=""
+      DTS:DTSID="{B1D93B5E-DB23-4A46-B69D-9E8F7EA4EFD6}"
+      DTS:From="Package\Truncate FactPayroll"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint"
+      DTS:To="Package\Load FactPayroll" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 1]"
+      DTS:CreationName=""
+      DTS:DTSID="{3A3AED67-81F7-4121-B259-960976500CF0}"
+      DTS:From="Package\Load FactPayroll"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 1"
+      DTS:To="Package\Validate_FactPayroll" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 2]"
+      DTS:CreationName=""
+      DTS:DTSID="{DBE3D164-129F-46D5-ABDA-DA9D90E51B69}"
+      DTS:From="Package\Log Package start"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 2"
+      DTS:To="Package\Truncate FactPayroll" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 3]"
+      DTS:CreationName=""
+      DTS:DTSID="{CDA5FEBE-3468-4604-AE4F-BF7AEE218B5D}"
+      DTS:From="Package\Validate_FactPayroll"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 3"
+      DTS:To="Package\Log FactPayroll Success" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 5]"
+      DTS:CreationName=""
+      DTS:DTSID="{A4ED67BA-73CE-4C62-8759-34FB8B131E69}"
+      DTS:From="Package\Truncate FactPayroll"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 5"
+      DTS:To="Package\Log Package Failure"
+      DTS:Value="1" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 6]"
+      DTS:CreationName=""
+      DTS:DTSID="{061AEDD1-D91A-4D13-ABD5-5B6EFEE750E4}"
+      DTS:From="Package\Load FactPayroll"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 6"
+      DTS:To="Package\Log Package Failure"
+      DTS:Value="1" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 7]"
+      DTS:CreationName=""
+      DTS:DTSID="{04F9D8D3-79C5-4E00-B025-AE45BC140258}"
+      DTS:From="Package\Validate_FactPayroll"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 7"
+      DTS:To="Package\Log Package Failure"
+      DTS:Value="1" />
+  </DTS:PrecedenceConstraints>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        <NodeLayout
+          Size="160,42.6666666666667"
+          Id="Package\Load FactPayroll"
+          TopLeft="103.749995362014,281.210523228153" />
+        <NodeLayout
+          Size="196.666666666667,42.6666666666667"
+          Id="Package\Log FactPayroll Success"
+          TopLeft="130.624994160607,505.631573395634" />
+        <NodeLayout
+          Size="177.333333333334,42.6666666666667"
+          Id="Package\Log Package Failure"
+          TopLeft="688.749969210477,245.631576250382" />
+        <NodeLayout
+          Size="165.333333333334,42.6666666666667"
+          Id="Package\Log Package start"
+          TopLeft="240.624989243224,86.2105253692149" />
+        <NodeLayout
+          Size="178.666666666667,42.6666666666667"
+          Id="Package\Truncate FactPayroll"
+          TopLeft="121.249994579703,180.63157696407" />
+        <NodeLayout
+          Size="177.333333333334,42.6666666666667"
+          Id="Package\Validate_FactPayroll"
+          TopLeft="114.374994887039,387.947364161467" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint]"
+          TopLeft="210.583327913037,223.298243630736">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-52.1666658843563,57.9122795974171"
+              Start="0,0"
+              End="-52.1666658843563,50.4122795974171">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,30.4033344143072" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,30.4033344143072"
+                    Point2="0,34.4033344143072"
+                    Point3="-4,34.4033344143072" />
+                  <mssgle:LineSegment
+                    End="-48.1666658843563,34.4033344143072" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-48.1666658843563,34.4033344143072"
+                    Point2="-52.1666658843563,34.4033344143072"
+                    Point3="-52.1666658843563,38.4033344143072" />
+                  <mssgle:LineSegment
+                    End="-52.1666658843563,50.4122795974171" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 1]"
+          TopLeft="183.749995362014,323.87718989482">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="19.2916661916917,64.0701742666473"
+              Start="0,0"
+              End="19.2916661916917,56.5701742666473">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,28.0350871333237" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,28.0350871333237"
+                    Point2="0,32.0350871333237"
+                    Point3="4,32.0350871333237" />
+                  <mssgle:LineSegment
+                    End="15.2916661916917,32.0350871333237" />
+                  <mssgle:CubicBezierSegment
+                    Point1="15.2916661916917,32.0350871333237"
+                    Point2="19.2916661916917,32.0350871333237"
+                    Point3="19.2916661916917,36.0350871333237" />
+                  <mssgle:LineSegment
+                    End="19.2916661916917,56.5701742666473" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 2]"
+          TopLeft="297.069433687669,128.877192035882">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-86.4861057746324,51.754384928188"
+              Start="0,0"
+              End="-86.4861057746324,44.254384928188">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,16.9993830219804" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,16.9993830219804"
+                    Point2="0,20.9993830219804"
+                    Point3="-4,20.9993830219804" />
+                  <mssgle:LineSegment
+                    End="-82.4861057746324,20.9993830219804" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-82.4861057746324,20.9993830219804"
+                    Point2="-86.4861057746324,20.9993830219804"
+                    Point3="-86.4861057746324,24.9993830219804" />
+                  <mssgle:LineSegment
+                    End="-86.4861057746324,44.254384928188" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 3]"
+          TopLeft="203.041661553706,430.614030828134">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="25.9166659402347,75.0175425675003"
+              Start="0,0"
+              End="25.9166659402347,67.5175425675003">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,33.5087712837501" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,33.5087712837501"
+                    Point2="0,37.5087712837501"
+                    Point3="4,37.5087712837501" />
+                  <mssgle:LineSegment
+                    End="21.9166659402347,37.5087712837501" />
+                  <mssgle:CubicBezierSegment
+                    Point1="21.9166659402347,37.5087712837501"
+                    Point2="25.9166659402347,37.5087712837501"
+                    Point3="25.9166659402347,41.5087712837501" />
+                  <mssgle:LineSegment
+                    End="25.9166659402347,67.5175425675003" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 5]"
+          TopLeft="299.91666124637,201.964910297403">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="388.833307964107,59.2222215085349"
+              Start="0,0"
+              End="381.333307964107,59.2222215085349">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="220.867455208158,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="220.867455208158,0"
+                    Point2="224.867455208158,0"
+                    Point3="224.867455208158,4" />
+                  <mssgle:LineSegment
+                    End="224.867455208158,55.2222215085349" />
+                  <mssgle:CubicBezierSegment
+                    Point1="224.867455208158,55.2222215085349"
+                    Point2="224.867455208158,59.2222215085349"
+                    Point3="228.867455208158,59.2222215085349" />
+                  <mssgle:LineSegment
+                    End="381.333307964107,59.2222215085349" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="209.626107551908,-15.7490234375,30.4826953125,9.7490234375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 6]"
+          TopLeft="263.749995362014,302.543856561486">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="424.999973848463,-29.8011691999932"
+              Start="0,0"
+              End="417.499973848463,-29.8011691999932">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="241.78311740634,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="241.78311740634,0"
+                    Point2="245.78311740634,0"
+                    Point3="245.78311740634,-4" />
+                  <mssgle:LineSegment
+                    End="245.78311740634,-25.8011691999932" />
+                  <mssgle:CubicBezierSegment
+                    Point1="245.78311740634,-25.8011691999932"
+                    Point2="245.78311740634,-29.8011691999932"
+                    Point3="249.78311740634,-29.8011691999932" />
+                  <mssgle:LineSegment
+                    End="417.499973848463,-29.8011691999932" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="230.54176975009,1,30.4826953125,9.7490234375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 7]"
+          TopLeft="231.263883775928,387.947364161467">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="546.152752101216,-99.6491212444184"
+              Start="0,0"
+              End="546.152752101216,-92.1491212444184">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,-36.3942786564557" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,-36.3942786564557"
+                    Point2="0,-40.3942786564557"
+                    Point3="4,-40.3942786564557" />
+                  <mssgle:LineSegment
+                    End="542.152752101216,-40.3942786564557" />
+                  <mssgle:CubicBezierSegment
+                    Point1="542.152752101216,-40.3942786564557"
+                    Point2="546.152752101216,-40.3942786564557"
+                    Point3="546.152752101216,-44.3942786564557" />
+                  <mssgle:LineSegment
+                    End="546.152752101216,-92.1491212444184" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="257.835028394358,-35.3942786564557,30.4826953125,9.7490234375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>
