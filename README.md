@@ -1,19 +1,88 @@
-
 # Workforce Payroll Data Warehouse
 
-## 📊 Overview
-Built an end-to-end data pipeline using SQL Server, SSIS, and SSRS to transform HR and payroll data into a star schema data warehouse. The project includes ETL processes with logging and validation, and reporting dashboards to analyze payroll costs, overtime, and workforce trends.
+## 📌 Project Summary
+This project focuses on building a complete data pipeline to transform raw HR and payroll data into a structured data warehouse for reporting and analysis.
 
-## 🛠️ Tools Used
-- SQL Server
-- SSIS (ETL)
-- SSRS (Reporting)
+The solution includes ETL processes, data validation, logging, and a reporting layer to analyze payroll distribution, overtime usage, and monthly trends.
 
-## 🧱 Architecture
-OLTP → Staging → Data Warehouse → Reporting
+---
 
-## 📈 Key Features
-- Star schema design (Fact + Dimensions)
-- ETL pipeline with logging and failure handling
-- Data validation checks (row counts, aggregates, keys)
-- Interactive SSRS reports with parameters
+## 🧱 Project Workflow
+
+1. Source Data (OLTP System)
+2. Data Extraction into Staging (SSIS)
+3. Transformation into Data Warehouse (Star Schema)
+4. Validation & Quality Checks
+5. Reporting with SSRS
+
+---
+
+## 🗄️ Data Model
+
+The warehouse uses a star schema design:
+
+- **Fact Table**
+  - FactPayroll
+
+- **Dimension Tables**
+  - DimEmployee
+  - DimDepartment
+  - DimJobTitle
+  - DimPayType
+  - DimDate
+
+---
+
+## ⚙️ ETL Pipeline
+
+The ETL process was built using SSIS and includes:
+
+- Data extraction from OLTP system
+- Loading into staging tables
+- Transformation into dimension and fact tables
+- Execution logging using `ETL_RunLog`
+- Error handling and failure tracking
+
+---
+
+## ✅ Data Validation
+
+To ensure data quality, the project includes:
+
+- Row count comparisons (staging vs warehouse)
+- Aggregate checks (Gross Pay, Net Pay)
+- Foreign key validation
+- End-to-end validation queries
+
+---
+
+## 📊 Reporting
+
+An SSRS report was created to provide:
+
+- Payroll by Department
+- Overtime by Department
+- Monthly Payroll Trends
+- Department filter parameter
+
+---
+
+## 📸 Screenshots
+
+### ETL Workflow
+![ETL Flow]
+
+### Data Warehouse Output
+![Fact Table]
+
+### ETL Logging
+![Run Log]
+
+### Final Dashboard
+![Report]
+
+---
+
+## 🎯 Outcome
+
+This project demonstrates the ability to design and implement a full data pipeline, from raw data ingestion to reporting, using industry-standard tools.
