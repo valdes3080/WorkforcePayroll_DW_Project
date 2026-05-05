@@ -1,8 +1,8 @@
-\# 📊 Workforce \& Payroll Analytics Warehouse
+# 📊 Workforce \& Payroll Analytics Warehouse
 
 
 
-\## 📌 Project Summary
+## 📌 Project Summary
 
 The Workforce \& Payroll Analytics Warehouse is an end-to-end data project that models HR and payroll operations in a normalized relational database, then transforms that data into a dimensional warehouse for reporting.
 
@@ -20,7 +20,7 @@ This project demonstrates the full lifecycle of data:
 
 
 
-\## 🎯 Business Problem
+## 🎯 Business Problem
 
 Organizations store employee, timesheet, and payroll data in operational systems, but leadership lacks visibility into:
 
@@ -34,7 +34,7 @@ Organizations store employee, timesheet, and payroll data in operational systems
 
 
 
-\## 🚀 Project Goal
+## 🚀 Project Goal
 
 To enable analytics on:
 
