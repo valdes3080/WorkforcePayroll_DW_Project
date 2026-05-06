@@ -70,7 +70,9 @@ An SSRS report was created to provide:
 ## 📸 Screenshots
 
 ### ETL Workflow
-![ETLFlow](WorkforcePayroll_DW_Project/09_Screenshots/ETLFlow.gif)
+<p align="center">
+  <img src="09_Screenshots/ETLFlow.gif" width="100%">
+</p>
 
 ### Data Warehouse Output
 ![Fact Table]
