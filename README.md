@@ -76,7 +76,7 @@ An SSRS report was created to provide:
 
 ### Data Warehouse Output
 <p align="center">
-  <img src="09_Screenshots/DataWarehouse.gif" width="100%">
+  <img src="09_Screenshots/DataWarehouse_.gif" width="100%">
 </p>
 
 ### ETL Logging
