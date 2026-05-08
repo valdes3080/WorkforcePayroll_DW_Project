@@ -85,7 +85,9 @@ An SSRS report was created to provide:
 </p>
 
 ### Final Dashboard
-![Report]
+<p align="center">
+  <img src="09_Screenshots/FinalReport.gif" width="100%">
+</p>
 
 ---
 
