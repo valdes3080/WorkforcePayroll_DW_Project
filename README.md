@@ -80,7 +80,9 @@ An SSRS report was created to provide:
 </p>
 
 ### ETL Logging
-![Run Log]
+<p align="center">
+  <img src="09_Screenshots/EtlRunLog.png" width="100%">
+</p>
 
 ### Final Dashboard
 ![Report]
